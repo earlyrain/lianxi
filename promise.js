@@ -133,11 +133,21 @@ class MyPromise {
     return promise2;
   }
 
-  catch(onRejected) {
-    if (this.state === 'rejected') {
-      onRejected(this.reason);
-    }
+  catch(fn) {
+    return this.then(null, fn);
   }
+}
+
+MyPromise.resolve = (val) => {
+  return new MyPromise((resolve, reject) => {
+    resolve(val)
+  })
+}
+
+MyPromise.reject = (val) => {
+  return new MyPromise((resolve, reject) => {
+    reject(val)
+  })
 }
 
 let request = new MyPromise((resolve, reject) => {
