@@ -81,23 +81,52 @@ class MyPromise {
   }
 
   then(onFulfilled, onRejected) {
+    // onFulfilled如果不是函数，就忽略onFulfilled，直接返回value
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+    // onRejected如果不是函数，就忽略onRejected，直接扔出错误
+    onRejected = typeof onRejected === 'function' ? onRejected : err => { throw(err) };
     let promise2 = new MyPromise((resolve, reject) => {
       if (this.state === 'fulfilled') {
-        let x = onFulfilled(this.value);
-        resolvePromise(promise2, x, resolve, reject);
+        setTimeout(() => {
+          try {
+            let x = onFulfilled(this.value);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error)
+          }
+        }, 0)
       }
       if (this.state === 'rejected') {
-        let x = onRejected(this.reason);
-        resolvePromise(promise2, x, resolve, reject);
+        setTimeout(() => {
+          try {
+            let x = onRejected(this.reason);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error)
+          }
+        }, 0)
+
       }
       if (this.state === 'pending') {
         this.onResolvedCallbacks.push(()=> {
-          let x = onFulfilled(this.value);
-          resolvePromise(promise2, x, resolve, reject);
+          setTimeout(() => {
+            try {
+              let x = onFulfilled(this.value);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error)
+            }
+          }, 0)
         });
         this.onRejectedCallbacks.push(()=> {
-          let x = onRejected(this.reason);
-          resolvePromise(promise2, x, resolve, reject);
+          setTimeout(() => {
+            try {
+              let x = onRejected(this.reason);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error)
+            }
+          }, 0)
         });
       }
     })
@@ -120,5 +149,12 @@ let request = new MyPromise((resolve, reject) => {
   }, 1000)
 });
 request.then(res => {
-  console.log("🚀 ~ file: promise.js ~ line 62 ~ res", res)
+  console.log("🚀 ~ file: promise.js ~ line 123 ~ res", res)
+  return new MyPromise((resolve) => {
+    setTimeout(() => {
+      resolve(20)
+    }, 1000)
+  })
+}, () => {}).then(res => {
+  console.log("🚀 ~ file: promise.js ~ line 130 ~ res", res)
 }, () => {})
